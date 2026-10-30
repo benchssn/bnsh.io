@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Celestial Clock</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="instrument">
+      <header class="masthead">
+        <p class="overtitle">Horologium Caeleste</p>
+        <h1>Celestial Clock</h1>
+        <p class="subtitle">Astronomical rhythms, from the day to the planets</p>
+      </header>
+
+      <svg id="dial" class="dial" role="img" aria-label="24-hour solar dial with solar noon at the top"></svg>
+
+      <section class="facts-group" aria-labelledby="sun-heading">
+        <h2 id="sun-heading">Sun</h2>
+        <dl class="facts">
+          <div><dt>Sun in</dt><dd id="f-sign" class="glyphic">—</dd></div>
+          <div><dt>Day length</dt><dd id="f-daylength">—</dd></div>
+          <div><dt>Altitude</dt><dd id="f-altitude">—</dd></div>
+          <div><dt>Azimuth</dt><dd id="f-azimuth">—</dd></div>
+          <div><dt>Equation of time</dt><dd id="f-eot">—</dd></div>
+          <div><dt>Solar − civil</dt><dd id="f-offset">—</dd></div>
+        </dl>
+      </section>
+
+      <section class="facts-group" aria-labelledby="moon-heading">
+        <h2 id="moon-heading">Moon</h2>
+        <dl class="facts">
+          <div><dt>Moon in</dt><dd id="m-sign" class="glyphic">—</dd></div>
+          <div><dt>Phase</dt><dd id="m-phase">—</dd></div>
+          <div><dt>Illuminated</dt><dd id="m-illuminated">—</dd></div>
+          <div><dt>Age</dt><dd id="m-age">—</dd></div>
+          <div><dt>Rise · set</dt><dd id="m-riseset">—</dd></div>
+          <div><dt>True − mean</dt><dd id="m-lead">—</dd></div>
+          <div><dt id="m-next-name">Next phase</dt><dd id="m-next">—</dd></div>
+        </dl>
+      </section>
+
+      <footer class="place">
+        <p>
+          <span id="place-coords">No location</span>
+          <span class="sep" aria-hidden="true">·</span>
+          <span id="place-zone"></span>
+        </p>
+        <button id="change-location" type="button">Change location</button>
+        <p class="legend">
+          Inner scale: apparent solar time &nbsp;·&nbsp; Outer scale: civil clock time<br />
+          Silver arc: Moon above the horizon &nbsp;·&nbsp; Outer ring: lunar phase, new moon at the bottom, full moon at the top<br />
+          Inner glyphs: planetary hours, the traditional Chaldean scheme of twelve unequal hours by day and twelve by night
+        </p>
+      </footer>
+    </main>
+
+    <div class="plates">
+      <p class="epigraph"><span class="glyph" aria-hidden="true">♄&#xFE0E; ♃&#xFE0E; ♂&#xFE0E; ☉&#xFE0E; ♀&#xFE0E; ☿&#xFE0E; ☽&#xFE0E;</span><br />ut supra, sic infra</p>
+      <section class="plate" aria-labelledby="cycles-heading">
+        <header>
+          <p class="plate-number">II · Cycli</p>
+          <h2 id="cycles-heading">Cycles</h2>
+          <p class="caption">
+            Every cycle uses the same model: a uniform mean phase θ̄ = 2π·frac((t − t₀)/T), plus a correction Δ(t) for the
+            real, uneven motion. The filled marker is the true phase. The inner tick is the mean phase, and the arc between
+            them is Δ. Phase ½ is always at the top: noon, full moon, the June solstice, a planet at its nearest alignment.
+          </p>
+        </header>
+        <div id="cycle-grid" class="cycle-grid"></div>
+      </section>
+
+      <section class="plate" aria-labelledby="alignment-heading">
+        <header>
+          <p class="plate-number">III · Coniunctiones</p>
+          <h2 id="alignment-heading">Alignment</h2>
+          <p class="caption">
+            A synodic phase is a relative phase: the angle at the Sun between Earth and a planet. In the orrery, the line
+            through the Sun and Earth is the alignment axis. A planet crossing it on Earth's side is at opposition; on the far
+            side, at conjunction. The ecliptic ring shows the same sky from Earth. The arc from the Sun to the Moon is the
+            lunar phase as an angle, and the shaded arcs around the Moon's nodes are the eclipse seasons.
+          </p>
+        </header>
+        <div class="al-figures">
+          <figure>
+            <svg id="orrery" class="al-svg" role="img" aria-label="Heliocentric orrery"></svg>
+            <figcaption>Heliocentric · seen from the north ecliptic pole · distances on a √ scale</figcaption>
+          </figure>
+          <figure>
+            <svg id="ecliptic" class="al-svg" role="img" aria-label="Geocentric ecliptic longitudes"></svg>
+            <figcaption>Geocentric ecliptic longitude · bars mark the lunar nodes</figcaption>
+          </figure>
+        </div>
+        <div class="al-lists">
+          <div>
+            <h3>Close in longitude</h3>
+            <ul id="al-pairs" class="al-list"></ul>
+          </div>
+          <div>
+            <h3>Eclipse season</h3>
+            <p id="al-season" class="al-season"></p>
+          </div>
+          <div>
+            <h3>Next events</h3>
+            <ul id="al-upcoming" class="al-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="plate" aria-labelledby="recurrence-heading">
+        <header>
+          <p class="plate-number">IV · Recursus</p>
+          <h2 id="recurrence-heading">Recurrence</h2>
+          <p class="caption">
+            This is a stroboscope. It samples one cycle each time another returns to phase 0, plotting time outward from the
+            centre. If q periods of one nearly equal p of the other, the samples fall into q spiral arms. The continued-fraction
+            table lists these near-recurrences, each more exact and longer than the last. That is a nested hierarchy of
+            approximate commensurabilities in a quasi-periodic system, which is not the same thing as fractal structure.
+          </p>
+        </header>
+        <div class="rc-presets">
+          <button type="button" data-preset="metonic">Metonic cycle</button>
+          <button type="button" data-preset="venus">Venus pentagram</button>
+          <button type="button" data-preset="saros">Eclipse windows</button>
+          <button type="button" data-preset="mars">Mars</button>
+        </div>
+        <div class="rc-layout">
+          <svg id="rc-svg" class="rc-svg" role="img" aria-label="Stroboscopic phase spiral"></svg>
+          <div class="rc-side">
+            <div class="rc-controls">
+              <label>Sample at each phase 0 of <select id="rc-a"></select></label>
+              <label>Plot the phase of <select id="rc-b"></select></label>
+              <label>Samples
+                <select id="rc-n">
+                  <option>12</option><option>24</option><option>30</option><option>40</option><option>50</option>
+                  <option>100</option><option>200</option><option>400</option>
+                </select>
+              </label>
+              <fieldset>
+                <legend>Phases</legend>
+                <label class="inline"><input type="radio" name="rc-model" value="true" checked /> True</label>
+                <label class="inline"><input type="radio" name="rc-model" value="mean" /> Mean model</label>
+              </fieldset>
+              <label class="inline"><input type="checkbox" id="rc-join" /> Join successive samples</label>
+              <button type="button" id="rc-rerun">Re-run from current time</button>
+            </div>
+            <p id="rc-note" class="rc-note"></p>
+            <p id="rc-summary" class="rc-summary"></p>
+          </div>
+        </div>
+        <div class="portrait">
+          <h3>Phase portrait</h3>
+          <p class="caption">
+            Two phases make a point on a torus: cycle A runs around the ring and cycle B around the tube. As time passes the
+            point winds around the surface. If the ratio of periods were a fraction, the path would close; because it is not,
+            the path never quite closes and slowly covers the whole surface. The amber circle is where A returns to phase 0.
+            The points on it are the stroboscope samples above, a Poincaré section of the motion. Drag the torus to turn it.
+          </p>
+          <div class="portrait-figures">
+            <figure>
+              <canvas id="tp-torus" class="tp-canvas tp-torus" role="img" aria-label="Trajectory on a torus"></canvas>
+              <figcaption>The torus</figcaption>
+            </figure>
+            <figure>
+              <canvas id="tp-flat" class="tp-canvas" role="img" aria-label="Trajectory on the flat torus"></canvas>
+              <figcaption>The same path unrolled: opposite edges join</figcaption>
+            </figure>
+          </div>
+          <p id="tp-note" class="rc-summary"></p>
+        </div>
+
+        <div class="rc-table-wrap">
+          <table class="rc-table">
+            <thead>
+              <tr><th>Cycle A</th><th>≈ Cycle B</th><th>Spanning</th><th>Mismatch</th><th>B drift per repeat</th></tr>
+            </thead>
+            <tbody id="rc-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="timebar" class="timebar" role="group" aria-label="Time controls">
+      <span id="tb-status" class="tb-status">Live</span>
+      <button id="tb-slower" type="button" aria-label="Slower or reverse">«</button>
+      <button id="tb-play" type="button">Pause</button>
+      <button id="tb-faster" type="button" aria-label="Faster">»</button>
+      <span id="tb-rate" class="tb-rate">Real time</span>
+      <input id="tb-date" type="datetime-local" min="1800-01-01T00:00" max="2100-12-31T23:59" aria-label="Jump to date and time" />
+      <button id="tb-now" type="button">Now</button>
+    </div>
+
+    <dialog id="location-dialog">
+      <form id="location-form" method="dialog">
+        <h2>Location</h2>
+        <button id="use-device" type="button" class="primary">Use my current location</button>
+        <p class="or">or enter coordinates</p>
+        <label>Latitude <span class="hint">° north positive</span>
+          <input name="lat" type="number" step="any" min="-90" max="90" inputmode="decimal" placeholder="51.4769" />
+        </label>
+        <label>Longitude <span class="hint">° east positive</span>
+          <input name="lon" type="number" step="any" min="-180" max="180" inputmode="decimal" placeholder="-0.0005" />
+        </label>
+        <label>Time zone <span class="hint">for civil time</span>
+          <select name="tz"></select>
+        </label>
+        <p id="location-message" class="message" role="status"></p>
+        <div class="actions">
+          <button type="submit" value="cancel" formnovalidate>Cancel</button>
+          <button type="submit" value="apply" class="primary">Apply</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

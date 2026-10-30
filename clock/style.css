@@ -1,0 +1,1264 @@
+/* Celestial Clock — instrument styling. Dark by design. */
+
+:root {
+  --bg: #06080e;
+  --bg-glow: #111a2c;
+  --ink: #e9e4d8;
+  --ink-dim: rgba(233, 228, 216, 0.58);
+  --ink-faint: rgba(233, 228, 216, 0.26);
+  --ink-ghost: rgba(233, 228, 216, 0.1);
+  --amber: #f4b860;
+  --amber-bright: #ffd58f;
+  --amber-deep: #d9732e;
+  --ember: #9c3f1e;
+  --night: #141c2e;
+  --night-edge: #1e2a42;
+  --silver: #d3d9e6;
+  --silver-dim: rgba(211, 217, 230, 0.38);
+  --earth: #7fa6d9;
+  --c-year: #a9c79a;
+  --c-draconic: #9fb4d8;
+  --c-mercury: #b9b3a8;
+  --c-venus: #f1e4c2;
+  --c-mars: #df7e5e;
+  --c-jupiter: #d9b48c;
+  --c-saturn: #cdbf8d;
+
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --font-text: 'Avenir Next', Avenir, 'Helvetica Neue', 'Segoe UI', system-ui, sans-serif;
+  --font-glyph: 'Apple Symbols', 'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Noto Sans Symbols', 'DejaVu Sans', serif;
+  --engrave: rgba(244, 184, 96, 0.09);
+  --font-numeric: system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: radial-gradient(ellipse 80% 60% at 50% 38%, var(--bg-glow), var(--bg) 70%) fixed, var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.instrument {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 3vh, 28px);
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vh, 44px) 16px 32px;
+}
+
+/* ---- masthead ---- */
+
+.masthead {
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  padding-left: 0.32em; /* optically recentre tracked caps */
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--ink-dim);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+/* ---- dial ---- */
+
+.dial {
+  width: min(100%, 76vh, 740px);
+  aspect-ratio: 1;
+  display: block;
+  overflow: visible;
+  transition: opacity 0.8s ease;
+}
+
+.dial.inactive {
+  opacity: 0.35;
+}
+
+.face-stop-inner { stop-color: #0f1626; }
+.face-stop-outer { stop-color: #080b13; }
+.face {
+  fill: url(#face);
+  stroke: var(--ink-ghost);
+  stroke-width: 1;
+}
+
+.rule {
+  fill: none;
+  stroke: var(--ink-ghost);
+  stroke-width: 1;
+}
+
+.night-band {
+  fill: none;
+  stroke: var(--night);
+}
+
+.day-stop-noon { stop-color: var(--amber-bright); }
+.day-stop-low { stop-color: var(--amber); }
+.day-stop-horizon { stop-color: var(--amber-deep); }
+.day-band {
+  fill: none;
+  stroke: url(#daylight);
+  opacity: 0.88;
+}
+
+.tick-hour {
+  stroke: var(--ink-dim);
+  stroke-width: 2;
+}
+.tick-quarter {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+
+.numeral,
+.civil-numeral {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.numeral {
+  fill: var(--ink-faint);
+  font-size: 15px;
+  font-weight: 300;
+}
+.numeral.major {
+  fill: var(--ink-dim);
+  font-weight: 400;
+}
+
+.civil-tick {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+.civil-tick.major {
+  stroke: var(--ink-dim);
+}
+.civil-numeral {
+  fill: var(--ink-faint);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+.civil-numeral.noon {
+  fill: var(--ink-dim);
+}
+
+/* ---- event markers ---- */
+
+.event line {
+  stroke: var(--ink-dim);
+  stroke-width: 1.5;
+}
+.event.noon line,
+.event.sunrise line,
+.event.sunset line {
+  stroke: var(--amber);
+}
+
+.event-name {
+  fill: var(--ink-faint);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  dominant-baseline: central;
+}
+.event-time {
+  fill: var(--ink-dim);
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-size: 20px;
+  font-weight: 300;
+  dominant-baseline: central;
+}
+.event.noon .event-time,
+.event.sunrise .event-time,
+.event.sunset .event-time {
+  fill: var(--amber);
+}
+
+/* ---- the Sun ---- */
+
+.hand-line {
+  stroke: var(--amber);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.sun-disk {
+  fill: var(--amber-bright);
+  stroke: var(--amber);
+  stroke-width: 2;
+  transition: fill 2s ease, opacity 2s ease;
+}
+
+/* Below the horizon the Sun is drawn as a hollow, dimmed disk. */
+.sun-hand.below-horizon .sun-disk {
+  fill: var(--bg);
+  opacity: 0.75;
+}
+.sun-hand.below-horizon .hand-line {
+  opacity: 0.4;
+}
+
+/* ---- lunar ring ---- */
+
+.lunar-track {
+  fill: none;
+  stroke: var(--ink-ghost);
+  stroke-width: 1;
+}
+
+.lunar-progress {
+  fill: none;
+  stroke: var(--silver-dim);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.lunar-tick {
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+
+.moon-dark {
+  fill: #0a0e18;
+}
+.moon-lit {
+  fill: var(--silver);
+}
+.moon-rim {
+  fill: none;
+  stroke: var(--silver-dim);
+  stroke-width: 1;
+}
+
+.moon-mark .moon-lit {
+  fill: var(--silver-dim);
+}
+.moon-mark .moon-rim {
+  stroke: var(--ink-faint);
+}
+
+/* ---- central readout ---- */
+
+.readout text {
+  dominant-baseline: central;
+}
+
+.readout-label {
+  fill: var(--ink-faint);
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.readout-solar {
+  fill: var(--amber);
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-size: 66px;
+  font-weight: 200;
+  letter-spacing: 0.02em;
+}
+
+.readout-civil {
+  fill: var(--ink);
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-size: 36px;
+  font-weight: 300;
+}
+
+.readout-zone {
+  fill: var(--ink-faint);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+}
+
+.readout-status {
+  fill: var(--amber);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+}
+
+/* ---- facts rows ---- */
+
+.facts-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.facts-group h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: var(--amber);
+}
+
+#moon-heading {
+  color: var(--silver);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 30px;
+  margin: 0;
+  justify-content: center;
+  text-align: center;
+}
+
+.facts dt {
+  color: var(--ink-faint);
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 6px 0 0;
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-weight: 300;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+@media (max-width: 620px) {
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 16px;
+  }
+}
+
+/* ---- location ---- */
+
+.place {
+  text-align: center;
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
+.place p {
+  margin: 0 0 10px;
+}
+
+.place .sep {
+  margin: 0 6px;
+  color: var(--ink-faint);
+}
+
+.legend {
+  margin-top: 18px !important;
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+button {
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+button:hover,
+button:focus-visible {
+  color: var(--amber);
+  border-color: var(--amber);
+  outline: none;
+}
+
+button.primary {
+  color: var(--amber);
+  border-color: rgba(244, 184, 96, 0.5);
+}
+
+dialog {
+  width: min(400px, calc(100vw - 32px));
+  padding: 28px;
+  background: #0c111c;
+  color: var(--ink);
+  border: 1px solid var(--ink-ghost);
+  border-radius: 14px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+dialog::backdrop {
+  background: rgba(3, 5, 9, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+dialog h2 {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.1rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+dialog .or {
+  margin: 4px 0 0;
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+dialog label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.06em;
+}
+
+dialog .hint {
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+}
+
+dialog input,
+dialog select {
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: #070a12;
+  border: 1px solid var(--ink-ghost);
+  border-radius: 8px;
+  padding: 9px 11px;
+  width: 100%;
+}
+
+dialog input:focus,
+dialog select:focus {
+  outline: none;
+  border-color: var(--amber);
+}
+
+dialog .message {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--amber);
+  font-size: 0.8rem;
+}
+
+dialog .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ==== shared plate layout (Iterations 3–5) ==== */
+
+body {
+  padding-bottom: 72px; /* room for the time bar */
+}
+
+.plates {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+
+.plate {
+  border-top: 1px solid var(--ink-ghost);
+  padding-top: 36px;
+}
+
+.plate > header {
+  max-width: 680px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.plate-number {
+  margin: 0;
+  color: var(--ink-faint);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+}
+
+.plate h2 {
+  margin: 4px 0 12px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.15rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.caption {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.plate h3 {
+  margin: 0 0 10px;
+  color: var(--ink-faint);
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.num {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+}
+
+/* cycle colours: one token per cycle, used by every view */
+.cycle-day { --cc: var(--amber); }
+.cycle-month { --cc: var(--silver); }
+.cycle-draconic { --cc: var(--c-draconic); }
+.cycle-year { --cc: var(--c-year); }
+.cycle-mercury, .body-mercury { --cc: var(--c-mercury); }
+.cycle-venus, .body-venus { --cc: var(--c-venus); }
+.cycle-mars, .body-mars { --cc: var(--c-mars); }
+.cycle-jupiter, .body-jupiter { --cc: var(--c-jupiter); }
+.cycle-saturn, .body-saturn { --cc: var(--c-saturn); }
+.body-earth { --cc: var(--earth); }
+
+/* ==== cycle dials ==== */
+
+.defs-host {
+  position: absolute;
+}
+
+.cycle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px 20px;
+}
+
+@media (max-width: 760px) {
+  .cycle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.cycle-card {
+  margin: 0;
+  text-align: center;
+}
+
+.cycle-card svg {
+  width: 100%;
+  max-width: 300px;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.cc-track {
+  fill: none;
+  stroke: var(--ink-ghost);
+  stroke-width: 1.5;
+}
+.cc-tick {
+  stroke: var(--ink-faint);
+  stroke-width: 1.5;
+}
+.cc-label {
+  fill: var(--ink-faint);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  dominant-baseline: central;
+}
+.cc-correction {
+  fill: none;
+  stroke: var(--cc);
+  stroke-width: 3;
+  opacity: 0.55;
+}
+.cc-mean {
+  stroke: var(--cc);
+  stroke-width: 2;
+  opacity: 0.6;
+}
+.cc-marker {
+  fill: var(--cc);
+}
+.cc-phase {
+  fill: var(--ink);
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-weight: 300;
+  font-size: 24px;
+  dominant-baseline: central;
+}
+.cc-phase-label {
+  fill: var(--ink-faint);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.cycle-card figcaption h3 {
+  margin: 6px 0 2px;
+  color: var(--cc);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+.cc-period {
+  margin: 0 0 8px;
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+.cycle-card dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0;
+}
+.cycle-card dt {
+  color: var(--ink-faint);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cycle-card dd {
+  margin: 3px 0 0;
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+
+/* ==== alignment ==== */
+
+.al-figures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.al-figures figure {
+  margin: 0;
+  text-align: center;
+}
+.al-figures figcaption {
+  margin-top: 6px;
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+.al-svg {
+  width: 100%;
+  max-width: 480px;
+  display: block;
+  margin: 0 auto;
+}
+
+.al-axis {
+  stroke: var(--earth);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  opacity: 0.55;
+}
+.al-orbit {
+  fill: none;
+  stroke: var(--ink-ghost);
+  stroke-width: 1;
+}
+.al-gamma {
+  stroke: var(--ink-faint);
+}
+.al-gamma-label,
+.al-degree {
+  fill: var(--ink-faint);
+  font-size: 10px;
+  dominant-baseline: central;
+}
+.al-sun {
+  fill: var(--amber-bright);
+}
+.al-body circle {
+  fill: var(--cc);
+}
+.al-body-label {
+  fill: var(--cc);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  dominant-baseline: central;
+}
+.al-ring {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+.al-tick {
+  stroke: var(--ink-ghost);
+}
+.al-tick.major {
+  stroke: var(--ink-faint);
+}
+.al-eclipse-zone {
+  fill: none;
+  stroke: var(--silver);
+  stroke-width: 16;
+  opacity: 0.08;
+}
+.al-node {
+  stroke: var(--silver-dim);
+  stroke-width: 2;
+}
+.al-elong {
+  fill: none;
+  stroke: var(--silver-dim);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+.al-elong-label {
+  fill: var(--silver-dim);
+  font-size: 10px;
+  dominant-baseline: central;
+}
+
+.al-lists {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin-top: 32px;
+}
+.al-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.82rem;
+}
+.al-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--ink-ghost);
+  color: var(--ink-dim);
+}
+.al-list li .num {
+  color: var(--ink);
+  white-space: nowrap;
+}
+.al-list li.none {
+  color: var(--ink-faint);
+}
+.al-season {
+  margin: 0;
+  color: var(--ink-dim);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .al-figures,
+  .al-lists {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==== recurrence ==== */
+
+.rc-presets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.rc-presets button.active {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+
+.rc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.rc-svg {
+  width: 100%;
+  max-width: 520px;
+  display: block;
+  margin: 0 auto;
+}
+.rc-frame {
+  fill: none;
+  stroke: var(--ink-ghost);
+}
+.rc-window {
+  fill: var(--silver);
+  opacity: 0.07;
+}
+.rc-tick {
+  stroke: var(--ink-faint);
+}
+.rc-label {
+  fill: var(--ink-faint);
+  font-size: 12px;
+  dominant-baseline: central;
+}
+.rc-join {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+}
+.rc-dots circle {
+  fill: var(--cc);
+}
+.rc-centre {
+  fill: var(--ink-faint);
+}
+
+.rc-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rc-controls label,
+.rc-controls legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+}
+.rc-controls label.inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.rc-controls fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.rc-controls legend {
+  width: 100%;
+  margin-bottom: 6px;
+}
+.rc-controls select,
+.timebar input {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: #070a12;
+  border: 1px solid var(--ink-ghost);
+  border-radius: 8px;
+  padding: 7px 9px;
+  color-scheme: dark;
+}
+.rc-controls input[type='radio'],
+.rc-controls input[type='checkbox'] {
+  accent-color: var(--amber);
+}
+.rc-controls button {
+  align-self: flex-start;
+}
+.rc-note {
+  margin: 20px 0 0;
+  color: var(--amber);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.rc-note:empty {
+  display: none;
+}
+.rc-summary {
+  margin: 14px 0 0;
+  color: var(--ink-dim);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.rc-table-wrap {
+  overflow-x: auto;
+  margin-top: 28px;
+}
+.rc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.rc-table th {
+  color: var(--ink-faint);
+  font-weight: 400;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0 10px 8px 0;
+}
+.rc-table td {
+  padding: 6px 10px 6px 0;
+  border-top: 1px solid var(--ink-ghost);
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.rc-table tr.visible td {
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .rc-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==== time bar ==== */
+
+.timebar {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 24px);
+  padding: 8px 12px;
+  background: rgba(8, 11, 19, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--ink-ghost);
+  border-radius: 999px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+.timebar button {
+  padding: 6px 12px;
+  font-size: 0.7rem;
+}
+.tb-status {
+  min-width: 72px;
+  text-align: center;
+  color: var(--ink-faint);
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.timebar.simulated .tb-status {
+  color: var(--amber);
+}
+.tb-rate {
+  min-width: 72px;
+  text-align: center;
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+}
+.timebar input {
+  padding: 5px 8px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 620px) {
+  .timebar {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    transform: none;
+    max-width: none;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px;
+    border-radius: 18px;
+  }
+  .timebar button {
+    padding: 6px 9px;
+    letter-spacing: 0.08em;
+  }
+  .tb-status,
+  .tb-rate {
+    min-width: 0;
+    letter-spacing: 0.08em;
+  }
+  .timebar input {
+    order: 10;
+    flex: 1 1 100%;
+  }
+  body {
+    padding-bottom: 120px;
+  }
+}
+
+/* ==== esoteric layer ==== */
+
+.glyph,
+.glyphic,
+.hour-glyph,
+.moon-label {
+  font-family: var(--font-glyph);
+  font-variant-emoji: text;
+}
+.glyphic {
+  letter-spacing: 0.02em;
+}
+
+.overtitle {
+  margin: 0 0 8px;
+  color: var(--amber);
+  opacity: 0.7;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+}
+
+.epigraph {
+  margin: 8px 0 -24px;
+  text-align: center;
+  color: var(--ink-faint);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  line-height: 2;
+}
+.epigraph .glyph {
+  color: var(--amber);
+  opacity: 0.6;
+  font-style: normal;
+  font-size: 1.05rem;
+  letter-spacing: 0.5em;
+  padding-left: 0.5em;
+}
+
+/* plates: an ornament in place of a rule */
+.plate {
+  border-top: 0;
+  position: relative;
+}
+.plate::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(420px, 70%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, var(--engrave) 20%, rgba(244, 184, 96, 0.28) 50%, var(--engrave) 80%, transparent);
+}
+.plate::after {
+  content: '✦';
+  position: absolute;
+  top: -0.62em;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 10px;
+  background: var(--bg);
+  color: var(--amber);
+  opacity: 0.55;
+  font-size: 0.8rem;
+}
+.plate-number {
+  font-style: italic;
+  letter-spacing: 0.24em;
+  color: var(--amber);
+  opacity: 0.6;
+}
+
+/* dial: engraving */
+.engraving-circle,
+.engraving-star {
+  fill: none;
+  stroke: var(--engrave);
+  stroke-width: 1;
+}
+
+/* dial: planetary hours */
+.hour-tick {
+  stroke: var(--ink-ghost);
+  stroke-width: 1;
+}
+.hour-tick.day {
+  stroke: rgba(244, 184, 96, 0.22);
+}
+.hour-glyph {
+  fill: var(--ink-faint);
+  font-size: 15px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.hour-glyph.day {
+  fill: rgba(244, 184, 96, 0.45);
+}
+.hour-glyph.current {
+  fill: var(--amber-bright);
+  font-size: 19px;
+  filter: url(#glow);
+}
+.hour-current {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 2;
+  opacity: 0.75;
+}
+
+/* dial: the Moon above the horizon */
+.moon-arc {
+  fill: none;
+  stroke: var(--silver);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+.moon-tick {
+  stroke: var(--silver);
+  stroke-width: 1.5;
+}
+.moon-label {
+  fill: var(--silver);
+  opacity: 0.85;
+  font-size: 15px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* the Sun as ☉: disk with its centre */
+.sun-point {
+  fill: var(--ember);
+}
+.sun-hand.below-horizon .sun-point {
+  fill: var(--amber);
+  opacity: 0.6;
+}
+
+/* ecliptic ring */
+.al-sign {
+  fill: var(--amber);
+  opacity: 0.45;
+  font-size: 13px;
+  dominant-baseline: central;
+}
+.al-node-glyph {
+  fill: var(--silver-dim);
+  font-size: 13px;
+  dominant-baseline: central;
+}
+.al-body-label.glyph {
+  font-size: 13px;
+}
+.cycle-card figcaption h3 .glyph {
+  font-style: normal;
+  margin-right: 2px;
+}
+
+/* ==== phase portrait ==== */
+
+.portrait {
+  margin-top: 44px;
+}
+.portrait > h3,
+.portrait > .caption {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.portrait > .caption {
+  margin-bottom: 20px;
+}
+.portrait-figures {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+.portrait-figures figure {
+  margin: 0;
+  text-align: center;
+}
+.portrait-figures figcaption {
+  margin-top: 6px;
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+.tp-canvas {
+  width: 100%;
+  aspect-ratio: 1;
+  display: block;
+}
+.tp-torus {
+  cursor: grab;
+  touch-action: none;
+}
+.tp-torus:active {
+  cursor: grabbing;
+}
+#tp-note {
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .portrait-figures {
+    grid-template-columns: 1fr;
+  }
+}
