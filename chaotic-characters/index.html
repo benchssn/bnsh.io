@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Random characters drawn one at a time from a pair of chaotic logistic maps." />
+    <title>Chaotic Characters · BNSH</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <nav>
+        <a class="brand" href="../">bnsh.io</a>
+        <a href="#how">How it works ↓</a>
+      </nav>
+
+      <header>
+        <p class="eyebrow">06 / CHAOS AS A SOURCE OF RANDOMNESS</p>
+        <h1>Chaotic <em>Characters</em></h1>
+        <p class="intro">
+          Two copies of the simplest chaotic equation, iterated in lockstep. Every character you ask for
+          is read from the digits deep inside their orbits, where the tiniest difference in the starting
+          point has already grown into a completely different number.
+        </p>
+      </header>
+
+      <section class="generator">
+        <div class="stage">
+          <div class="glyph empty" id="glyph" aria-live="polite" aria-atomic="true">?</div>
+          <button type="button" id="generate" class="primary">Generate a character</button>
+          <p class="hint">or press <kbd>Space</kbd></p>
+        </div>
+
+        <figure class="cobweb">
+          <canvas id="cobweb" aria-label="Cobweb diagram of the logistic map iterations behind the last character"></canvas>
+          <figcaption>
+            Cobweb diagram of the iterations behind the last character. Each bounce off the
+            parabola is one step of <var>x</var> ↦ 4<var>x</var>(1 − <var>x</var>).
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="history" aria-label="Generated characters">
+        <div class="history-head">
+          <span class="eyebrow">SEQUENCE · <output id="count">0</output></span>
+          <div class="buttons">
+            <button type="button" id="copy">Copy</button>
+            <button type="button" id="clear">Clear</button>
+          </div>
+        </div>
+        <p id="sequence" class="sequence"></p>
+      </section>
+
+      <section class="settings">
+        <label>
+          Alphabet
+          <select id="alphabet">
+            <option value="ABCDEFGHIJKLMNOPQRSTUVWXYZ">Letters A–Z</option>
+            <option value="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" selected>Letters + digits</option>
+            <option value="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&amp;*()-_=+[]{};:,.?/">Letters, digits + symbols</option>
+            <option value="0123456789abcdef">Hexadecimal</option>
+            <option value="01">Binary</option>
+            <option value="αβγδεζηθικλμνξοπρστυφχψω">Greek</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </label>
+        <label id="custom-wrap" hidden>
+          Custom characters
+          <input type="text" id="custom" value="✦✧★☆◆◇●○" />
+        </label>
+        <label>
+          Seed
+          <span class="seed-row">
+            <input type="text" id="seed" spellcheck="false" />
+            <button type="button" id="reseed">New</button>
+          </span>
+        </label>
+        <dl class="state">
+          <div><dt><var>x</var></dt><dd id="state-x">—</dd></div>
+          <div><dt><var>y</var></dt><dd id="state-y">—</dd></div>
+          <div><dt>Steps</dt><dd id="state-n">0</dd></div>
+        </dl>
+      </section>
+
+      <section id="how" class="how">
+        <h2>How it works</h2>
+        <div class="equation">
+          <p><var>x</var><sub><var>n</var>+1</sub> = 4 <var>x</var><sub><var>n</var></sub>(1 − <var>x</var><sub><var>n</var></sub>)</p>
+          <p><var>u</var> = <sup>2</sup>⁄<sub>π</sub> arcsin √<var>x</var></p>
+        </div>
+        <ol>
+          <li>
+            <strong>Seed.</strong> The seed text is hashed into two starting values, <var>x</var>₀ and
+            <var>y</var>₀, between 0 and 1. Change a single letter and both start somewhere else.
+          </li>
+          <li>
+            <strong>Stir.</strong> Each map is iterated several times between draws. At
+            <var>r</var> = 4 the logistic map doubles any error on average every step, so after a few dozen
+            steps the starting digits are completely forgotten.
+          </li>
+          <li>
+            <strong>Flatten.</strong> The map spends most of its time near 0 and 1. The arcsine change
+            of variables turns its values into a uniform <var>u</var>, so no digit is favoured.
+          </li>
+          <li>
+            <strong>Extract.</strong> Bits from deep inside <var>u</var>, the most sensitive ones, are
+            taken from both maps and combined with XOR. Values that would favour part of the alphabet are
+            thrown away and redrawn, so every character has the same chance.
+          </li>
+        </ol>
+        <p class="note">
+          This is a demonstration of chaos, not a cryptographic generator. The same seed always gives the
+          same sequence, and floating-point arithmetic only approximates true chaos. For passwords, use your
+          password manager.
+        </p>
+      </section>
+
+      <footer>BNSH / Interactive laboratory · Experiment 06</footer>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

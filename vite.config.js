@@ -9,6 +9,7 @@ export default defineConfig({
         divide: fileURLToPath(new URL('./generational-divide/index.html', import.meta.url)),
         clock: fileURLToPath(new URL('./clock/index.html', import.meta.url)),
         lorenz: fileURLToPath(new URL('./lorenz/index.html', import.meta.url)),
+        chaoticCharacters: fileURLToPath(new URL('./chaotic-characters/index.html', import.meta.url)),
       },
     },
   },
