@@ -6,6 +6,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        divide: fileURLToPath(new URL('./generational-divide/index.html', import.meta.url)),
         clock: fileURLToPath(new URL('./clock/index.html', import.meta.url)),
       },
     },
