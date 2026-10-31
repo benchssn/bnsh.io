@@ -4,6 +4,7 @@ import snapshotUrl from './data.json?url';
 import { valueAt, selectRows, csvCell } from './model.js';
 const $ = id => document.getElementById(id);
 $('snapshot').href = snapshotUrl;
+$('unemployment-card-rate').textContent = valueAt(data, 'WLD', 2025) === null ? 'No data' : `${valueAt(data, 'WLD', 2025).toFixed(1)}%`;
 const rate = value => value === null ? 'No data' : `${value.toFixed(1)}%`;
 const escape = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 $('year').innerHTML = [...data.years].reverse().map(y => `<option>${y}</option>`).join('');

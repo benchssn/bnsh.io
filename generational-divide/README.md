@@ -21,3 +21,9 @@ Re-fetch both API URLs; check page count and fetch all pages if needed. Rebuild 
 ## Checks
 
 `node --test generational-divide/model.test.js` exercises missing data, zero rates, filtering, sorting, country coverage and source integrity. `npm run build` builds all three pages.
+
+## Investigation cards (iteration 03)
+
+The landing collection adds four native expandable evidence cards, with labelled dates, denominators, zero-based bars, source links and interpretation limits. Child poverty shows selected 2014 and 2024 estimates from World Bank/UNICEF; hazardous child labour compares a total and its subset; wealth displays the 2025 distribution from WIR 2026; NEET displays the 2024 Central/Southern Asia gender comparison and global trend context from the UN SDG 2025 extended report. These are separate populations, years and units: do not add their counts or present snapshots as time series. Figures are pinned to those published sources, checked 2026-10-31.
+
+The fifth card links to the original full unemployment explorer. Its headline stays pinned to 2025 while the explorer retains its independent year/region/search controls. Cards expand without extra JavaScript and support keyboard operation. All styling remains monochrome.
