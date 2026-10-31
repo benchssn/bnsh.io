@@ -88,23 +88,37 @@ button.primary:hover { background: #fff; }
 }
 
 .glyph {
+  width: clamp(130px, 22vw, 180px);
+  aspect-ratio: 100 / 140;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #1f1f1f;
+  border-radius: 6px;
+}
+
+.glyph:empty::before { content: ''; width: 30%; height: 2px; background: #2a2a2a; }
+
+svg {
   --hue: 0;
-  font-size: clamp(7rem, 16vw, 11rem);
-  line-height: 1;
-  font-weight: 500;
-  min-height: 1em;
-  color: hsl(var(--hue), 100%, 64%);
-  text-shadow: 0 0 40px hsl(var(--hue), 100%, 50%, .45);
+  display: block;
+  fill: none;
+  stroke: hsl(var(--hue), 100%, 64%);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
 }
 
-.glyph.empty { color: #333; text-shadow: none; }
+.glyph svg { width: 100%; height: 100%; filter: drop-shadow(0 0 14px hsl(var(--hue), 100%, 50%, .5)); }
 
-.glyph.pop { animation: pop .45s cubic-bezier(.2, .9, .3, 1.3); }
-
-@keyframes pop {
-  from { transform: scale(.6); opacity: 0; filter: blur(8px); }
-  to { transform: scale(1); opacity: 1; filter: blur(0); }
+.writing path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: write .38s ease-in-out forwards;
+  animation-delay: calc(var(--i) * .32s);
 }
+
+@keyframes write { to { stroke-dashoffset: 0; } }
 
 .hint { margin: 0; color: #666; font-size: .78rem; }
 
@@ -131,18 +145,17 @@ figcaption, .note { margin-top: 12px; color: #777; font-size: .75rem; line-heigh
 .buttons { display: flex; gap: 8px; }
 
 .sequence {
-  margin: 16px 0 0;
-  min-height: 2em;
-  font-family: ui-monospace, Menlo, monospace;
-  font-size: 1.35rem;
-  line-height: 1.5;
-  word-break: break-all;
+  margin-top: 16px;
+  min-height: 56px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 4px;
 }
 
-.sequence:empty::before { content: 'Nothing yet. Ask for a character.'; color: #555; font-family: Inter, Helvetica, Arial, sans-serif; font-size: .85rem; }
+.sequence:empty::before { content: 'Nothing written yet. Ask for a character.'; color: #555; font-size: .85rem; align-self: center; }
 
-.sequence span { color: hsl(var(--hue), 100%, 64%); }
-.sequence span:last-child { text-decoration: underline; text-underline-offset: 6px; }
+.sequence svg { width: 34px; height: 48px; stroke-width: 8; }
+.sequence svg:last-child { outline: 1px solid #333; outline-offset: 3px; border-radius: 3px; }
 
 /* ── Settings ──────────────────────────────────────────────────────────── */
 
@@ -155,7 +168,10 @@ figcaption, .note { margin-top: 12px; color: #777; font-size: .75rem; line-heigh
 }
 
 label { display: grid; gap: 6px; font-size: .78rem; color: #aaa; }
-label[hidden] { display: none; }
+.range-label { display: flex; justify-content: space-between; }
+.range-label output { color: #f3f3f3; }
+input[type="range"] { width: 100%; accent-color: #f3f3f3; margin: 8px 0 0; }
+.settings .wide { grid-column: 1 / -1; }
 
 select, input[type="text"] {
   width: 100%;

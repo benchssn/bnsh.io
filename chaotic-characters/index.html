@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Random characters drawn one at a time from a pair of chaotic logistic maps." />
+    <meta name="description" content="Invented glyphs from no language, drawn one at a time from a pair of chaotic logistic maps." />
     <title>Chaotic Characters · BNSH</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
@@ -16,18 +16,18 @@
       </nav>
 
       <header>
-        <p class="eyebrow">06 / CHAOS AS A SOURCE OF RANDOMNESS</p>
+        <p class="eyebrow">06 / ASEMIC WRITING FROM CHAOS</p>
         <h1>Chaotic <em>Characters</em></h1>
         <p class="intro">
-          Two copies of the simplest chaotic equation, iterated in lockstep. Every character you ask for
-          is read from the digits deep inside their orbits, where the tiniest difference in the starting
-          point has already grown into a completely different number.
+          Characters from a script that never existed. Each one is drawn stroke by stroke from two copies
+          of the simplest chaotic equation, so it looks like writing but belongs to no language and
+          says nothing at all.
         </p>
       </header>
 
       <section class="generator">
         <div class="stage">
-          <div class="glyph empty" id="glyph" aria-live="polite" aria-atomic="true">?</div>
+          <div class="glyph" id="glyph" aria-live="polite"></div>
           <button type="button" id="generate" class="primary">Generate a character</button>
           <p class="hint">or press <kbd>Space</kbd></p>
         </div>
@@ -35,41 +35,39 @@
         <figure class="cobweb">
           <canvas id="cobweb" aria-label="Cobweb diagram of the logistic map iterations behind the last character"></canvas>
           <figcaption>
-            Cobweb diagram of the iterations behind the last character. Each bounce off the
-            parabola is one step of <var>x</var> ↦ 4<var>x</var>(1 − <var>x</var>).
+            Cobweb diagram of the logistic map behind the last character. Each bounce off the
+            parabola is one step of <var>x</var> ↦ 4<var>x</var>(1 − <var>x</var>), and every stroke,
+            curve and dot was decided by these numbers.
+            <span id="cobweb-note"></span>
           </figcaption>
         </figure>
       </section>
 
       <section class="history" aria-label="Generated characters">
         <div class="history-head">
-          <span class="eyebrow">SEQUENCE · <output id="count">0</output></span>
+          <span class="eyebrow">MANUSCRIPT · <output id="count">0</output></span>
           <div class="buttons">
-            <button type="button" id="copy">Copy</button>
+            <button type="button" id="download">Download SVG</button>
             <button type="button" id="clear">Clear</button>
           </div>
         </div>
-        <p id="sequence" class="sequence"></p>
+        <div id="sequence" class="sequence"></div>
       </section>
 
       <section class="settings">
         <label>
-          Alphabet
-          <select id="alphabet">
-            <option value="ABCDEFGHIJKLMNOPQRSTUVWXYZ">Letters A–Z</option>
-            <option value="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" selected>Letters + digits</option>
-            <option value="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&amp;*()-_=+[]{};:,.?/">Letters, digits + symbols</option>
-            <option value="0123456789abcdef">Hexadecimal</option>
-            <option value="01">Binary</option>
-            <option value="αβγδεζηθικλμνξοπρστυφχψω">Greek</option>
-            <option value="custom">Custom…</option>
+          Style
+          <select id="style">
+            <option value="mixed" selected>Mixed</option>
+            <option value="angular">Angular</option>
+            <option value="flowing">Flowing</option>
           </select>
         </label>
-        <label id="custom-wrap" hidden>
-          Custom characters
-          <input type="text" id="custom" value="✦✧★☆◆◇●○" />
-        </label>
         <label>
+          <span class="range-label">Complexity <output id="complexity-out">3</output></span>
+          <input type="range" id="complexity" min="1" max="5" step="1" value="3" />
+        </label>
+        <label class="wide">
           Seed
           <span class="seed-row">
             <input type="text" id="seed" spellcheck="false" />
@@ -95,24 +93,26 @@
             <var>y</var>₀, between 0 and 1. Change a single letter and both start somewhere else.
           </li>
           <li>
-            <strong>Stir.</strong> Each map is iterated several times between draws. At
+            <strong>Stir.</strong> Each map is iterated several times for every number it gives out. At
             <var>r</var> = 4 the logistic map doubles any error on average every step, so after a few dozen
             steps the starting digits are completely forgotten.
           </li>
           <li>
             <strong>Flatten.</strong> The map spends most of its time near 0 and 1. The arcsine change
-            of variables turns its values into a uniform <var>u</var>, so no digit is favoured.
+            of variables turns its values into a uniform <var>u</var>, and bits from deep inside both maps
+            are combined with XOR.
           </li>
           <li>
-            <strong>Extract.</strong> Bits from deep inside <var>u</var>, the most sensitive ones, are
-            taken from both maps and combined with XOR. Values that would favour part of the alphabet are
-            thrown away and redrawn, so every character has the same chance.
+            <strong>Write.</strong> Each character sits on a loose grid of 3 × 4 points, nudged a little
+            so no two are alike. The chaotic numbers choose how many strokes to make, where each starts
+            (usually on a point an earlier stroke touched, so the pieces join), which neighbouring point to
+            move to next, whether that move is straight or curved and how far it bends, and whether to add
+            a dot or a small tail.
           </li>
         </ol>
         <p class="note">
-          This is a demonstration of chaos, not a cryptographic generator. The same seed always gives the
-          same sequence, and floating-point arithmetic only approximates true chaos. For passwords, use your
-          password manager.
+          Nothing here is drawn from a real alphabet, though now and then a simple shape may resemble a
+          letter by coincidence. The same seed always writes the same manuscript.
         </p>
       </section>
 

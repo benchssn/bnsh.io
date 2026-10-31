@@ -4,17 +4,18 @@ const glyphEl = $('#glyph')
 const sequenceEl = $('#sequence')
 const countEl = $('#count')
 const seedInput = $('#seed')
-const alphabetSelect = $('#alphabet')
-const customWrap = $('#custom-wrap')
-const customInput = $('#custom')
-const copyButton = $('#copy')
+const styleSelect = $('#style')
+const complexityInput = $('#complexity')
 const canvas = $('#cobweb')
 const ctx = canvas.getContext('2d')
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const SVG_NS = 'http://www.w3.org/2000/svg'
 
 const WARMUP = 64 // iterations discarded after seeding
 const STIR = 5 // iterations of each map between draws
 const EDGE = 1e-12
+const BOX = { w: 100, h: 140 } // glyph cell in SVG units
+const COBWEB_STEPS = 40 // iterations shown in the cobweb diagram
 
 // ── The chaotic source ──────────────────────────────────────────────────────
 
@@ -77,41 +78,127 @@ function seed(text) {
   for (let i = 0; i < WARMUP; i++) step()
 }
 
+
+// Uniform number in [0, 1) from the chaotic source.
+const rand = trail => drawBits(trail) / 65536
+
+
+// ── Glyphs ──────────────────────────────────────────────────────────────────
+
+// A glyph is a few strokes over a jittered 3 × 4 grid of points. Every choice
+// (stroke count, start, direction, curvature, dots, tails) comes from the chaos.
+function buildGlyph(style, complexity, trail) {
+  const r = () => rand(trail)
+  const pick = list => list[drawIndex(list.length, trail)]
+
+  for (;;) {
+    const nodes = []
+    for (let row = 0; row < 4; row++) {
+      for (let col = 0; col < 3; col++) {
+        nodes.push({ col, row, x: 20 + 30 * col + (r() - 0.5) * 12, y: 22 + 32 * row + (r() - 0.5) * 12 })
+      }
+    }
+
+    const strokes = []
+    const touched = []
+    let segments = 0
+    const strokeCount = 1 + drawIndex(complexity, trail)
+
+    for (let s = 0; s < strokeCount; s++) {
+      let cur = touched.length && r() < 0.7 ? pick(touched) : pick(nodes)
+      let prev = null
+      let d = `M${cur.x.toFixed(1)} ${cur.y.toFixed(1)}`
+      touched.push(cur)
+      const length = 1 + drawIndex(3, trail)
+
+      for (let k = 0; k < length; k++) {
+        const options = nodes.filter(n => n !== cur && n !== prev &&
+          Math.abs(n.col - cur.col) <= 1 && Math.abs(n.row - cur.row) <= 2)
+        const next = pick(options)
+        const curved = style === 'flowing' || (style === 'mixed' && r() < 0.5)
+        if (curved) {
+          const dx = next.x - cur.x, dy = next.y - cur.y
+          const bend = (r() - 0.5) * 1.3
+          const cx = (cur.x + next.x) / 2 - dy * bend
+          const cy = (cur.y + next.y) / 2 + dx * bend
+          d += ` Q${cx.toFixed(1)} ${cy.toFixed(1)} ${next.x.toFixed(1)} ${next.y.toFixed(1)}`
+        } else {
+          d += ` L${next.x.toFixed(1)} ${next.y.toFixed(1)}`
+        }
+        prev = cur
+        cur = next
+        touched.push(cur)
+        segments++
+      }
+
+      // Occasional short tail off the end of a stroke.
+      if (r() < 0.25) {
+        const angle = r() * Math.PI * 2
+        d += ` l${(Math.cos(angle) * 12).toFixed(1)} ${(Math.sin(angle) * 12).toFixed(1)}`
+      }
+      strokes.push(d)
+    }
+
+    // Occasional dot, offset from a point the glyph touches.
+    if (r() < 0.35) {
+      const n = pick(touched)
+      const x = Math.min(92, Math.max(8, n.x + (r() - 0.5) * 30))
+      const y = r() < 0.5 ? 8 : Math.min(134, n.y + 18)
+      strokes.push(`M${x.toFixed(1)} ${y.toFixed(1)} l0.01 0`)
+    }
+
+    // Too simple to read as a character (and too likely to match a real one).
+    if (segments >= 3) return { strokes, hue: r() * 300 }
+  }
+}
+
+function glyphSvg(glyph, { animate = false } = {}) {
+  const svg = document.createElementNS(SVG_NS, 'svg')
+  svg.setAttribute('viewBox', `${-(glyph.dx ?? 0)} 0 ${BOX.w} ${BOX.h}`)
+  svg.style.setProperty('--hue', glyph.hue)
+  if (animate && !reduceMotion) svg.classList.add('writing')
+  glyph.strokes.forEach((d, i) => {
+    const path = document.createElementNS(SVG_NS, 'path')
+    path.setAttribute('d', d)
+    path.setAttribute('pathLength', '1')
+    path.style.setProperty('--i', i)
+    svg.append(path)
+  })
+  return svg
+}
+
 // ── Page ────────────────────────────────────────────────────────────────────
 
 const history = []
 
-function alphabet() {
-  const source = alphabetSelect.value === 'custom' ? customInput.value : alphabetSelect.value
-  const chars = [...new Set(Array.from(source).filter(ch => ch.trim()))]
-  return chars.length ? chars : ['?']
-}
-
-const hueFor = (index, n) => (n > 1 ? (index / (n - 1)) * 300 : 0)
-
 function generate() {
-  const chars = alphabet()
   const start = state.x
   const trail = []
-  const index = drawIndex(chars.length, trail)
-  const ch = chars[index]
-  const hue = hueFor(index, chars.length)
+  const glyph = buildGlyph(styleSelect.value, Number(complexityInput.value), trail)
+  history.push(glyph)
 
-  history.push({ ch, hue })
-  glyphEl.textContent = ch
-  glyphEl.style.setProperty('--hue', hue)
-  glyphEl.classList.remove('pop', 'empty')
-  void glyphEl.offsetWidth // restart the animation
-  glyphEl.classList.add('pop')
+  // Centre the glyph horizontally once its real extent is known.
+  const big = glyphSvg(glyph, { animate: true })
+  glyphEl.replaceChildren(big)
+  const box = big.getBBox()
+  glyph.dx = BOX.w / 2 - (box.x + box.width / 2)
+  big.setAttribute('viewBox', `${-glyph.dx} 0 ${BOX.w} ${BOX.h}`)
+  const label = `Invented character ${history.length}`
+  glyphEl.setAttribute('aria-label', label)
 
-  const span = document.createElement('span')
-  span.textContent = ch
-  span.style.setProperty('--hue', hue)
-  sequenceEl.append(span)
+  const small = glyphSvg(glyph)
+  small.setAttribute('role', 'img')
+  small.setAttribute('aria-label', label)
+  sequenceEl.append(small)
   countEl.value = history.length
 
   showState()
-  animateCobweb(start, trail)
+  // A glyph can take hundreds of iterations; the diagram shows the last few.
+  const shown = trail.slice(-COBWEB_STEPS)
+  animateCobweb(trail.length > COBWEB_STEPS ? trail[trail.length - COBWEB_STEPS - 1] : start, shown)
+  $('#cobweb-note').textContent = trail.length > COBWEB_STEPS
+    ? `Showing the last ${COBWEB_STEPS} of ${trail.length} iterations behind this character.`
+    : `All ${trail.length} iterations behind this character.`
 }
 
 function showState() {
@@ -123,10 +210,10 @@ function showState() {
 function reset() {
   seed(seedInput.value)
   history.length = 0
-  sequenceEl.textContent = ''
+  sequenceEl.replaceChildren()
   countEl.value = 0
-  glyphEl.textContent = '?'
-  glyphEl.classList.add('empty')
+  glyphEl.replaceChildren()
+  glyphEl.removeAttribute('aria-label')
   showState()
   animateCobweb(state.x, [])
 }
@@ -134,6 +221,23 @@ function reset() {
 function randomSeed() {
   const bytes = crypto.getRandomValues(new Uint8Array(6))
   return Array.from(bytes, b => b.toString(36).padStart(2, '0')).join('').slice(0, 10)
+}
+
+// The manuscript as a standalone SVG, twelve characters to a line.
+function manuscriptSvg() {
+  const perLine = 12, gap = 10
+  const lines = Math.max(1, Math.ceil(history.length / perLine))
+  const width = perLine * (BOX.w + gap) + gap
+  const height = lines * (BOX.h + gap) + gap
+  const cells = history.map((g, i) => {
+    const x = gap + (i % perLine) * (BOX.w + gap)
+    const y = gap + Math.floor(i / perLine) * (BOX.h + gap)
+    const paths = g.strokes.map(d => `<path d="${d}"/>`).join('')
+    return `<g transform="translate(${x + (g.dx ?? 0)} ${y})" stroke="hsl(${g.hue.toFixed(0)}, 100%, 64%)">${paths}</g>`
+  })
+  return `<svg xmlns="${SVG_NS}" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">` +
+    `<rect width="100%" height="100%" fill="#000"/>` +
+    `<g fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">${cells.join('')}</g></svg>`
 }
 
 // ── Cobweb diagram ──────────────────────────────────────────────────────────
@@ -144,7 +248,7 @@ function animateCobweb(start, trail) {
   cancelAnimationFrame(cobwebFrame)
   const points = [start, ...trail]
   const total = points.length - 1
-  const duration = reduceMotion ? 0 : 140 * total
+  const duration = reduceMotion ? 0 : Math.min(140 * total, 3000)
   const began = performance.now()
 
   const tick = now => {
@@ -219,6 +323,7 @@ function drawCobweb(points, shown) {
   ctx.fill()
 }
 
+
 // ── Events ──────────────────────────────────────────────────────────────────
 
 $('#generate').addEventListener('click', generate)
@@ -237,20 +342,18 @@ $('#reseed').addEventListener('click', () => {
   reset()
 })
 
-alphabetSelect.addEventListener('change', () => {
-  customWrap.hidden = alphabetSelect.value !== 'custom'
+complexityInput.addEventListener('input', () => {
+  $('#complexity-out').value = complexityInput.value
 })
 
 $('#clear').addEventListener('click', reset)
 
-copyButton.addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(history.map(h => h.ch).join(''))
-    copyButton.textContent = 'Copied'
-  } catch {
-    copyButton.textContent = 'Copy failed'
-  }
-  setTimeout(() => { copyButton.textContent = 'Copy' }, 1400)
+$('#download').addEventListener('click', () => {
+  if (!history.length) return
+  const url = URL.createObjectURL(new Blob([manuscriptSvg()], { type: 'image/svg+xml' }))
+  const a = Object.assign(document.createElement('a'), { href: url, download: `chaotic-characters-${seedInput.value || 'seed'}.svg` })
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 })
 
 window.addEventListener('resize', () => animateCobweb(state.x, []))
