@@ -117,7 +117,7 @@ let cubeSpinY = 0
 let lastFrameTime = 0
 let frameAccumulator = 0
 const FIXED_STEP = 1 / 60
-const TIME_SCALE = 0.7
+const TIME_SCALE = 0.35
 
 const camera = { yaw: 0, pitch: 0, zoom: 1 }
 let view = null // rotation, scale and offsets for the current frame
