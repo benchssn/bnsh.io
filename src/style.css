@@ -91,16 +91,6 @@ article {
   padding: 30px;
 }
 
-article .lorenz-preview {
-  width: 100%;
-  height: 180px;
-  display: block;
-  margin: 18px 0 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: radial-gradient(circle at center, rgba(100,85,255,0.18), rgba(0,0,0,0.7) 55%, rgba(0,0,0,0.92));
-}
-
 article span { color: #888; font-size: .7rem; }
 article h2 { font-size: 1.4rem; font-weight: 500; }
 article p { color: #999; line-height: 1.6; }
