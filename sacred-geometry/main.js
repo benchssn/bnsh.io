@@ -117,6 +117,7 @@ let cubeSpinY = 0
 let lastFrameTime = 0
 let frameAccumulator = 0
 const FIXED_STEP = 1 / 60
+const TIME_SCALE = 0.7
 
 const camera = { yaw: 0, pitch: 0, zoom: 1 }
 let view = null // rotation, scale and offsets for the current frame
@@ -396,7 +397,7 @@ window.addEventListener('keydown', e => {
 // ── Loop ────────────────────────────────────────────────────────────────────
 
 function advanceSimulation(step) {
-  t += step
+  t += step * TIME_SCALE
   starSpin += (0.004 + (noise(t, 300) - 0.5) * 0.02) * (step * 60)
   cubeSpinX += (noise(t * 0.9, 400) - 0.5) * 0.03 * (step * 60)
   cubeSpinY -= (0.006 + (noise(t * 0.9, 500) - 0.5) * 0.02) * (step * 60)
