@@ -33,6 +33,9 @@ nav {
   top: 0;
   left: 0;
   right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 24px 28px;
   pointer-events: none;
   z-index: 2;
@@ -41,6 +44,9 @@ nav {
 nav > * { pointer-events: auto; }
 
 .brand { font-size: 1.25rem; font-weight: 700; }
+
+.nav-contact { color: #aaa; font-size: .85rem; }
+.nav-contact:hover { color: #fff; }
 
 #caption {
   position: fixed;

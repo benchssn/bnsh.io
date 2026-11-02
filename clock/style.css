@@ -58,6 +58,26 @@ body {
   padding: clamp(20px, 4vh, 44px) 16px 32px;
 }
 
+/* ---- site nav ---- */
+
+.site-nav {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 24px 0;
+}
+
+.site-nav a {
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: var(--amber);
+}
+
 /* ---- masthead ---- */
 
 .masthead {
