@@ -114,6 +114,9 @@ let t = 0
 let starSpin = 0
 let cubeSpinX = 0
 let cubeSpinY = 0
+let lastFrameTime = 0
+let frameAccumulator = 0
+const FIXED_STEP = 1 / 60
 
 const camera = { yaw: 0, pitch: 0, zoom: 1 }
 let view = null // rotation, scale and offsets for the current frame
@@ -392,12 +395,25 @@ window.addEventListener('keydown', e => {
 
 // ── Loop ────────────────────────────────────────────────────────────────────
 
-function frame() {
+function advanceSimulation(step) {
+  t += step
+  starSpin += (0.004 + (noise(t, 300) - 0.5) * 0.02) * (step * 60)
+  cubeSpinX += (noise(t * 0.9, 400) - 0.5) * 0.03 * (step * 60)
+  cubeSpinY -= (0.006 + (noise(t * 0.9, 500) - 0.5) * 0.02) * (step * 60)
+}
+
+function frame(now) {
+  if (!lastFrameTime) lastFrameTime = now
+
+  const elapsed = (now - lastFrameTime) / 1000
+  lastFrameTime = now
+
   if (!paused) {
-    t += 0.004
-    starSpin += 0.004 + (noise(t, 300) - 0.5) * 0.02
-    cubeSpinX += (noise(t * 0.9, 400) - 0.5) * 0.03
-    cubeSpinY -= 0.006 + (noise(t * 0.9, 500) - 0.5) * 0.02
+    frameAccumulator += elapsed
+    while (frameAccumulator >= FIXED_STEP) {
+      advanceSimulation(FIXED_STEP)
+      frameAccumulator -= FIXED_STEP
+    }
   }
   draw()
   requestAnimationFrame(frame)
