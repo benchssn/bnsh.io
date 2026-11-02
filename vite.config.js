@@ -10,6 +10,7 @@ export default defineConfig({
         clock: fileURLToPath(new URL('./clock/index.html', import.meta.url)),
         lorenz: fileURLToPath(new URL('./lorenz/index.html', import.meta.url)),
         chaoticCharacters: fileURLToPath(new URL('./chaotic-characters/index.html', import.meta.url)),
+        sacredGeometry: fileURLToPath(new URL('./sacred-geometry/index.html', import.meta.url)),
       },
     },
   },
