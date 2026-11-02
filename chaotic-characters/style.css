@@ -26,7 +26,8 @@ nav {
 }
 
 .brand { font-size: 1.25rem; font-weight: 700; }
-nav a:last-child { color: #aaa; font-size: .85rem; }
+.nav-links { display: flex; gap: 24px; }
+.nav-links a { color: #aaa; font-size: .85rem; }
 
 .eyebrow {
   margin: 0;
