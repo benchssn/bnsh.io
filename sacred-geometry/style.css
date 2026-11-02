@@ -18,12 +18,13 @@ body {
 #scene {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
   cursor: grab;
   touch-action: none;
 }
 
-#scene:active { cursor: grabbing; }
-#scene canvas { display: block; }
+#scene.dragging { cursor: grabbing; }
 
 a { color: inherit; text-decoration: none; }
 
