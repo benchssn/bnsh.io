@@ -8,7 +8,7 @@
     <title>BNSH — Research & Creative Technology</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   </head>
   <body>
     <canvas id="field" aria-hidden="true"></canvas>
@@ -20,68 +20,25 @@
       </nav>
 
       <section class="hero">
-        <span class="eyebrow">INDEPENDENT RESEARCH / CREATIVE TECHNOLOGY</span>
         <h1>Exploring the space between <em>science</em> and <em>art.</em></h1>
         <p>Experiments in perception, complex systems, sound, and interactive media.</p>
-        <a class="explore" href="#work">Explore my work ↓</a>
       </section>
 
       <section id="work" class="work">
-        <span class="eyebrow">SELECTED DIRECTIONS</span>
-        <div class="projects">
-          <article>
-            <span>01 / RESEARCH</span>
-            <h2>Neuroscience & Perception</h2>
-            <p>Investigating sensory processing, memory, and human experience.</p>
-          </article>
-          <article>
-            <span>02 / CREATIVE TECHNOLOGY</span>
-            <h2>Generative Systems</h2>
-            <p>Exploring emergence through code, geometry, and audiovisual art.</p>
-          </article>
-          <article>
-            <span>03 / EXPERIMENTS</span>
-            <h2>Interactive Laboratory</h2>
-            <p>Small, open-ended experiments at the intersection of science and play.</p>
-            <a class="explore" href="./clock/">Explore Celestial Clock →</a>
-          </article>
-          <article>
-            <span>04 / INVESTIGATIVE DATA</span>
-            <h2>The Generational Divide</h2>
-            <p>Investigating unequal opportunity through global youth unemployment data.</p>
-            <a class="explore" href="./generational-divide/">Explore the global dashboard →</a>
-          </article>
-          <article>
-            <span>05 / COMPLEX SYSTEMS</span>
-            <h2>The Lorenz Attractor</h2>
-            <p>Three simple equations, infinite sensitivity. Nudge the initial conditions and watch chaos unfold.</p>
-            <a class="explore" href="./lorenz/">Explore the attractor →</a>
-          </article>
-          <article>
-            <span>06 / ASEMIC WRITING</span>
-            <h2>Chaotic Characters</h2>
-            <p>Invented characters from a script that never existed, written stroke by stroke by chaos.</p>
-            <a class="explore" href="./chaotic-characters/">Generate a character →</a>
-          </article>
-          <article>
-            <span>07 / SACRED GEOMETRY</span>
-            <h2>Flower, Star &amp; Cube</h2>
-            <p>A cube held inside a star tetrahedron, floating over the Flower of Life and drifting on Perlin noise.</p>
-            <a class="explore" href="./sacred-geometry/">Enter the geometry →</a>
-          </article>
-        </div>
+        <ul>
+          <li><span>Neuroscience &amp; Perception</span> — sensory processing, memory, human experience</li>
+          <li><span>Generative Systems</span> — emergence through code, geometry, audiovisual art</li>
+          <li><a href="./clock/">Celestial Clock</a> — an interactive laboratory</li>
+          <li><a href="./generational-divide/">The Generational Divide</a> — global youth unemployment data</li>
+          <li><a href="./lorenz/">The Lorenz Attractor</a> — nudge the initial conditions, watch chaos unfold</li>
+          <li><a href="./chaotic-characters/">Chaotic Characters</a> — a script that never existed, written by chaos</li>
+          <li><a href="./sacred-geometry/">Flower, Star &amp; Cube</a> — sacred geometry drifting on Perlin noise</li>
+        </ul>
       </section>
 
-      <footer>© BNSH · An evolving digital laboratory</footer>
+      <footer>© BNSH</footer>
     </main>
 
-    <div class="style-switch" role="group" aria-label="Homepage style options">
-      <span>style</span>
-      <button type="button" data-style="0">original</button>
-      <button type="button" data-style="1">1 · sketchbook</button>
-      <button type="button" data-style="2">2 · nocturne</button>
-      <button type="button" data-style="3">3 · zine</button>
-    </div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
