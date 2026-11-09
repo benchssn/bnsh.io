@@ -18,8 +18,8 @@ const SPIN = 0.00005 // radians per ms, ~2 minutes per revolution
 // Subtle rainbow: low-saturation hues that spread along each trail and drift slowly
 const HUE_SPAN = 150 // degrees of hue from the oldest to the newest part of a trail
 const HUE_SPEED = 0.006 // degrees per ms, ~1 minute per full cycle
-const SATURATION = 50
-const LIGHTNESS = 78
+const SATURATION = 92
+const LIGHTNESS = 62
 const hue = (base, t, time) => (base + t * HUE_SPAN + time * HUE_SPEED) % 360
 
 let width, height, dpr, scale, cx, cy
@@ -111,7 +111,7 @@ function draw(time) {
         else ctx.lineTo(px, py)
       }
       const t = (b + 1) / BUCKETS
-      ctx.strokeStyle = `hsla(${hue(trail.hueBase, t, time)}, ${SATURATION}%, ${LIGHTNESS}%, ${0.28 * t * t})`
+      ctx.strokeStyle = `hsla(${hue(trail.hueBase, t, time)}, ${SATURATION}%, ${LIGHTNESS}%, ${0.4 * t * t})`
       ctx.stroke()
     }
 
