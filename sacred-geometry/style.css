@@ -43,7 +43,8 @@ nav {
 
 nav > * { pointer-events: auto; }
 
-.brand { font-size: 1.25rem; font-weight: 700; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; }
+.brand .logo-mark { width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: butt; filter: none; }
 
 .nav-contact { color: #aaa; font-size: .85rem; }
 .nav-contact:hover { color: #fff; }
