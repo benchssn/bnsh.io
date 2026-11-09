@@ -80,7 +80,6 @@ footer {
   html { scroll-behavior: auto; }
 }
 /* Simple front page */
-.brand { font: 400 1.5rem 'Instrument Serif', Georgia, serif; }
 nav a:last-child { font-size: .85rem; }
 
 .hero { min-height: 62vh; }
