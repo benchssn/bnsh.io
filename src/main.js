@@ -15,6 +15,13 @@ const BUCKETS = 20
 const TILT = 0.38
 const SPIN = 0.00005 // radians per ms, ~2 minutes per revolution
 
+// Subtle rainbow: low-saturation hues that spread along each trail and drift slowly
+const HUE_SPAN = 150 // degrees of hue from the oldest to the newest part of a trail
+const HUE_SPEED = 0.006 // degrees per ms, ~1 minute per full cycle
+const SATURATION = 50
+const LIGHTNESS = 78
+const hue = (base, t, time) => (base + t * HUE_SPAN + time * HUE_SPEED) % 360
+
 let width, height, dpr, scale, cx, cy
 
 function step(s) {
@@ -26,10 +33,10 @@ function step(s) {
   s.z += dz * DT
 }
 
-function createTrail(seed, warmup, color) {
+function createTrail(seed, warmup, hueBase) {
   const s = { ...seed }
   for (let i = 0; i < warmup; i++) step(s)
-  const trail = { s, color, points: new Float32Array(TRAIL * 3), head: 0, count: 0 }
+  const trail = { s, hueBase, points: new Float32Array(TRAIL * 3), head: 0, count: 0 }
   for (let i = 0; i < TRAIL; i++) advance(trail)
   return trail
 }
@@ -45,9 +52,9 @@ function advance(trail) {
 }
 
 const trails = [
-  createTrail({ x: 0.1, y: 0, z: 0 }, 2000, '214, 222, 236'),
-  createTrail({ x: -6, y: 4, z: 22 }, 3500, '170, 186, 214'),
-  createTrail({ x: 3, y: -8, z: 30 }, 5000, '236, 232, 224')
+  createTrail({ x: 0.1, y: 0, z: 0 }, 2000, 210),
+  createTrail({ x: -6, y: 4, z: 22 }, 3500, 330),
+  createTrail({ x: 3, y: -8, z: 30 }, 5000, 90)
 ]
 
 function resize() {
@@ -104,15 +111,16 @@ function draw(time) {
         else ctx.lineTo(px, py)
       }
       const t = (b + 1) / BUCKETS
-      ctx.strokeStyle = `rgba(${trail.color}, ${0.28 * t * t})`
+      ctx.strokeStyle = `hsla(${hue(trail.hueBase, t, time)}, ${SATURATION}%, ${LIGHTNESS}%, ${0.28 * t * t})`
       ctx.stroke()
     }
 
     const i = ((head - 1 + TRAIL) % TRAIL) * 3
     const [hx, hy] = project(points[i], points[i + 1], points[i + 2])
     const glow = ctx.createRadialGradient(hx, hy, 0, hx, hy, 10)
-    glow.addColorStop(0, `rgba(${trail.color}, 0.55)`)
-    glow.addColorStop(1, `rgba(${trail.color}, 0)`)
+    const headHue = hue(trail.hueBase, 1, time)
+    glow.addColorStop(0, `hsla(${headHue}, ${SATURATION}%, ${LIGHTNESS}%, 0.55)`)
+    glow.addColorStop(1, `hsla(${headHue}, ${SATURATION}%, ${LIGHTNESS}%, 0)`)
     ctx.fillStyle = glow
     ctx.beginPath()
     ctx.arc(hx, hy, 10, 0, Math.PI * 2)
